@@ -29,7 +29,7 @@ SELECT p.Name, p.Color
 FROM Production.Product as p
 WHERE p.Color is not null and p.Size is not null
 
---#7 Найти и вывести на экран не повторяющиеся цвета продуктов, у которых цена находится в диапазоне от 10 до 50 включительно
+--#7 Найти и вывести на экран не повторяющиеся цвета продуктов, у которых цена находится в диапазоне от 10 до 50 включительно.
 SELECT DISTINCT p.Color
 FROM Production.Product as p
 WHERE p.Color is not null and p.ListPrice between 10 and 50
