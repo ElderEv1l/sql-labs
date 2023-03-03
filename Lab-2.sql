@@ -1,1 +1,94 @@
---#1 Íàéòè è âûâåñòè íà ýêðàí êîëè÷åñòâî òîâàðîâ êàæäîãî öâåòà, èñêëþ÷èâ èç ïîèñêà òîâàðû, öåíà êîòîðûõ ìåíüøå 30.SELECT p.Color, COUNT(*) as 'Amount'FROM Production.Product as pWHERE p.ListPrice >= 30GROUP BY p.Color--#2 Íàéòè è âûâåñòè íà ýêðàí ñïèñîê, ñîñòîÿùèé èç öâåòîâ òîâàðîâ, òàêèõ, ÷òî ìèíèìàëüíàÿ öåíà òîâàðà äàííîãî öâåòà áîëåå 100.SELECT p.ColorFROM Production.Product as pGROUP BY p.ColorHAVING MIN(p.ListPrice) > 100--#3 Íàéòè è âûâåñòè íà ýêðàí íîìåðà ïîäêàòåãîðèé òîâàðîâ è êîëè÷åñòâî òîâàðîâ â êàæäîé êàòåãîðèè.SELECT p.ProductSubcategoryID, COUNT(*) as 'Amount'FROM Production.Product as pGROUP BY p.ProductSubcategoryID--#4 Íàéòè è âûâåñòè íà ýêðàí íîìåðà òîâàðîâ è êîëè÷åñòâî ôàêòîâ ïðîäàæ äàííîãî òîâàðà (èñïîëüçóåòñÿ òàáëèöà SalesORDERDetail).SELECT s.ProductID, COUNT(*) as 'Amount'FROM Sales.SalesOrderDetail as sGROUP BY s.ProductID--#5 Íàéòè è âûâåñòè íà ýêðàí íîìåðà òîâàðîâ, êîòîðûå áûëè êóïëåíû áîëåå ïÿòè ðàç.SELECT s.ProductIDFROM Sales.SalesOrderDetail as sGROUP BY s.ProductIDHAVING COUNT(*) > 5--#6 Íàéòè è âûâåñòè íà ýêðàí íîìåðà ïîêóïàòåëåé, CustomerID, ó êîòîðûõ ñóùåñòâóåò áîëåå îäíîãî ÷åêà, SalesORDERID, ñ îäèíàêîâîé äàòîéSELECT DISTINCT s.CustomerIDFROM Sales.SalesOrderHeader as sGROUP BY s.CustomerID, s.OrderDateHAVING COUNT(s.OrderDate) > 1--#7 Íàéòè è âûâåñòè íà ýêðàí âñå íîìåðà ÷åêîâ, íà êîòîðûå ïðèõîäèòñÿ áîëåå òðåõ ïðîäóêòîâ.SELECT s.SalesOrderIDFROM Sales.SalesOrderDetail as sGROUP BY s.SalesOrderIDHAVING COUNT(s.ProductID) > 3--#8 Íàéòè è âûâåñòè íà ýêðàí âñå íîìåðà ïðîäóêòîâ, êîòîðûå áûëè êóïëåíû áîëåå òðåõ ðàç.SELECT s.ProductIDFROM Sales.SalesOrderDetail as sGROUP BY s.ProductIDHAVING COUNT(s.ProductID) > 3--#9 Íàéòè è âûâåñòè íà ýêðàí âñå íîìåðà ïðîäóêòîâ, êîòîðûå áûëè êóïëåíû èëè òðè èëè ïÿòü ðàçSELECT s.ProductIDFROM Sales.SalesOrderDetail as sGROUP BY s.ProductIDHAVING COUNT(s.ProductID) = 3 or COUNT(s.ProductID) = 5--#10 Íàéòè è âûâåñòè íà ýêðàí âñå íîìåðà ïîäêàòåãîðèé, â êîòîðûì îòíîñèòñÿ áîëåå äåñÿòè òîâàðîâ.SELECT p.ProductSubcategoryIDFROM Production.Product as pGROUP BY p.ProductSubcategoryIDHAVING COUNT(*) > 10--#11 Íàéòè è âûâåñòè íà ýêðàí íîìåðà òîâàðîâ, êîòîðûå âñåãäà ïîêóïàëèñü â îäíîì ýêçåìïëÿðå çà îäíó ïîêóïêó.SELECT s.ProductIDFROM Sales.SalesOrderDetail as sGROUP BY s.ProductIDHAVING MAX(s.OrderQty) = 1--#12 Íàéòè è âûâåñòè íà ýêðàí íîìåð ÷åêà, SalesORDERID, íà êîòîðûé ïðèõîäèòñÿ ñ íàèáîëüøèì ðàçíîîáðàçèåì òîâàðîâ êóïëåííûõ íà ýòîò ÷åê.SELECT TOP(1) s.SalesOrderIDFROM Sales.SalesOrderDetail as sGROUP BY s.SalesOrderIDORDER BY SUM(s.OrderQty) DESC--#13 Íàéòè è âûâåñòè íà ýêðàí íîìåð ÷åêà, SalesORDERID ñ íàèáîëüøåé ñóììîé ïîêóïêè, èñõîäÿ èç òîãî, ÷òî öåíà òîâàðà – ýòî UnitPrice, à êîëè÷åñòâî êîíêðåòíîãî òîâàðà â ÷åêå – ýòî ORDERQty.SELECT TOP(1) s.SalesOrderIDFROM Sales.SalesOrderDetail as sGROUP BY s.SalesOrderIDORDER BY SUM(s.OrderQty * s.UnitPrice) DESC--#14 Îïðåäåëèòü êîëè÷åñòâî òîâàðîâ â êàæäîé ïîäêàòåãîðèè, èñêëþ÷àÿ òîâàðû, äëÿ êîòîðûõ ïîäêàòåãîðèÿ íå îïðåäåëåíà, è òîâàðû, ó êîòîðûõ íå îïðåäåëåí öâåò.SELECT p.ProductSubcategoryID, COUNT(*) as 'Amount'FROM Production.Product as pWHERE p.Color is not null and p.ProductSubcategoryID is not nullGROUP BY p.ProductSubcategoryID--#15 Ïîëó÷èòü ñïèñîê öâåòîâ òîâàðîâ â ïîðÿäêå óáûâàíèÿ êîëè÷åñòâà òîâàðîâ äàííîãî öâåòàSELECT p.ColorFROM Production.Product as pGROUP BY p.ColorORDER BY COUNT(*) DESC--#16 Âûâåñòè íà ýêðàí ProductID òåõ òîâàðîâ, ÷òî âñåãäà ïîêóïàëèñü â êîëè÷åñòâå áîëåå 1 åäèíèöû íà îäèí ÷åê, ïðè ýòîì òàêèõ ïîêóïîê áûëî áîëåå äâóõ.SELECT s.ProductIDFROM Sales.SalesOrderDetail as sGROUP BY s.ProductIDHAVING MIN(s.OrderQty) > 1 and COUNT(*) > 2
+--#1 ÐÐ°Ð¹Ñ‚Ð¸ Ð¸ Ð²Ñ‹Ð²ÐµÑÑ‚Ð¸ Ð½Ð° ÑÐºÑ€Ð°Ð½ ÐºÐ¾Ð»Ð¸Ñ‡ÐµÑÑ‚Ð²Ð¾ Ñ‚Ð¾Ð²Ð°Ñ€Ð¾Ð² ÐºÐ°Ð¶Ð´Ð¾Ð³Ð¾ Ñ†Ð²ÐµÑ‚Ð°, Ð¸ÑÐºÐ»ÑŽÑ‡Ð¸Ð² Ð¸Ð· Ð¿Ð¾Ð¸ÑÐºÐ° Ñ‚Ð¾Ð²Ð°Ñ€Ñ‹, Ñ†ÐµÐ½Ð° ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ñ… Ð¼ÐµÐ½ÑŒÑˆÐµ 30. 
+SELECT p.Color, COUNT(*) as 'Amount'
+FROM Production.Product as p
+WHERE p.ListPrice >= 30
+GROUP BY p.Color
+
+--#2 ÐÐ°Ð¹Ñ‚Ð¸ Ð¸ Ð²Ñ‹Ð²ÐµÑÑ‚Ð¸ Ð½Ð° ÑÐºÑ€Ð°Ð½ ÑÐ¿Ð¸ÑÐ¾Ðº, ÑÐ¾ÑÑ‚Ð¾ÑÑ‰Ð¸Ð¹ Ð¸Ð· Ñ†Ð²ÐµÑ‚Ð¾Ð² Ñ‚Ð¾Ð²Ð°Ñ€Ð¾Ð², Ñ‚Ð°ÐºÐ¸Ñ…, Ñ‡Ñ‚Ð¾ Ð¼Ð¸Ð½Ð¸Ð¼Ð°Ð»ÑŒÐ½Ð°Ñ Ñ†ÐµÐ½Ð° Ñ‚Ð¾Ð²Ð°Ñ€Ð° Ð´Ð°Ð½Ð½Ð¾Ð³Ð¾ Ñ†Ð²ÐµÑ‚Ð° Ð±Ð¾Ð»ÐµÐµ 100.
+SELECT p.Color
+FROM Production.Product as p
+GROUP BY p.Color
+HAVING MIN(p.ListPrice) > 100
+
+--#3 ÐÐ°Ð¹Ñ‚Ð¸ Ð¸ Ð²Ñ‹Ð²ÐµÑÑ‚Ð¸ Ð½Ð° ÑÐºÑ€Ð°Ð½ Ð½Ð¾Ð¼ÐµÑ€Ð° Ð¿Ð¾Ð´ÐºÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸Ð¹ Ñ‚Ð¾Ð²Ð°Ñ€Ð¾Ð² Ð¸ ÐºÐ¾Ð»Ð¸Ñ‡ÐµÑÑ‚Ð²Ð¾ Ñ‚Ð¾Ð²Ð°Ñ€Ð¾Ð² Ð² ÐºÐ°Ð¶Ð´Ð¾Ð¹ ÐºÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸Ð¸.
+SELECT p.ProductSubcategoryID, COUNT(*) as 'Amount'
+FROM Production.Product as p
+GROUP BY p.ProductSubcategoryID
+
+--#4 ÐÐ°Ð¹Ñ‚Ð¸ Ð¸ Ð²Ñ‹Ð²ÐµÑÑ‚Ð¸ Ð½Ð° ÑÐºÑ€Ð°Ð½ Ð½Ð¾Ð¼ÐµÑ€Ð° Ñ‚Ð¾Ð²Ð°Ñ€Ð¾Ð² Ð¸ ÐºÐ¾Ð»Ð¸Ñ‡ÐµÑÑ‚Ð²Ð¾ Ñ„Ð°ÐºÑ‚Ð¾Ð² Ð¿Ñ€Ð¾Ð´Ð°Ð¶ Ð´Ð°Ð½Ð½Ð¾Ð³Ð¾ Ñ‚Ð¾Ð²Ð°Ñ€Ð° (Ð¸ÑÐ¿Ð¾Ð»ÑŒÐ·ÑƒÐµÑ‚ÑÑ Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ð° SalesORDERDetail).
+SELECT s.ProductID, COUNT(*) as 'Amount'
+FROM Sales.SalesOrderDetail as s
+GROUP BY s.ProductID
+
+--#5 ÐÐ°Ð¹Ñ‚Ð¸ Ð¸ Ð²Ñ‹Ð²ÐµÑÑ‚Ð¸ Ð½Ð° ÑÐºÑ€Ð°Ð½ Ð½Ð¾Ð¼ÐµÑ€Ð° Ñ‚Ð¾Ð²Ð°Ñ€Ð¾Ð², ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ðµ Ð±Ñ‹Ð»Ð¸ ÐºÑƒÐ¿Ð»ÐµÐ½Ñ‹ Ð±Ð¾Ð»ÐµÐµ Ð¿ÑÑ‚Ð¸ Ñ€Ð°Ð·.
+SELECT s.ProductID
+FROM Sales.SalesOrderDetail as s
+GROUP BY s.ProductID
+HAVING COUNT(*) > 5
+
+--#6 ÐÐ°Ð¹Ñ‚Ð¸ Ð¸ Ð²Ñ‹Ð²ÐµÑÑ‚Ð¸ Ð½Ð° ÑÐºÑ€Ð°Ð½ Ð½Ð¾Ð¼ÐµÑ€Ð° Ð¿Ð¾ÐºÑƒÐ¿Ð°Ñ‚ÐµÐ»ÐµÐ¹, CustomerID, Ñƒ ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ñ… ÑÑƒÑ‰ÐµÑÑ‚Ð²ÑƒÐµÑ‚ Ð±Ð¾Ð»ÐµÐµ Ð¾Ð´Ð½Ð¾Ð³Ð¾ Ñ‡ÐµÐºÐ°, SalesORDERID, Ñ Ð¾Ð´Ð¸Ð½Ð°ÐºÐ¾Ð²Ð¾Ð¹ Ð´Ð°Ñ‚Ð¾Ð¹
+SELECT DISTINCT s.CustomerID
+FROM Sales.SalesOrderHeader as s
+GROUP BY s.CustomerID, s.OrderDate
+HAVING COUNT(s.OrderDate) > 1
+
+--#7 ÐÐ°Ð¹Ñ‚Ð¸ Ð¸ Ð²Ñ‹Ð²ÐµÑÑ‚Ð¸ Ð½Ð° ÑÐºÑ€Ð°Ð½ Ð²ÑÐµ Ð½Ð¾Ð¼ÐµÑ€Ð° Ñ‡ÐµÐºÐ¾Ð², Ð½Ð° ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ðµ Ð¿Ñ€Ð¸Ñ…Ð¾Ð´Ð¸Ñ‚ÑÑ Ð±Ð¾Ð»ÐµÐµ Ñ‚Ñ€ÐµÑ… Ð¿Ñ€Ð¾Ð´ÑƒÐºÑ‚Ð¾Ð².
+SELECT s.SalesOrderID
+FROM Sales.SalesOrderDetail as s
+GROUP BY s.SalesOrderID
+HAVING COUNT(s.ProductID) > 3
+
+--#8 ÐÐ°Ð¹Ñ‚Ð¸ Ð¸ Ð²Ñ‹Ð²ÐµÑÑ‚Ð¸ Ð½Ð° ÑÐºÑ€Ð°Ð½ Ð²ÑÐµ Ð½Ð¾Ð¼ÐµÑ€Ð° Ð¿Ñ€Ð¾Ð´ÑƒÐºÑ‚Ð¾Ð², ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ðµ Ð±Ñ‹Ð»Ð¸ ÐºÑƒÐ¿Ð»ÐµÐ½Ñ‹ Ð±Ð¾Ð»ÐµÐµ Ñ‚Ñ€ÐµÑ… Ñ€Ð°Ð·.
+SELECT s.ProductID
+FROM Sales.SalesOrderDetail as s
+GROUP BY s.ProductID
+HAVING COUNT(s.ProductID) > 3
+
+--#9 ÐÐ°Ð¹Ñ‚Ð¸ Ð¸ Ð²Ñ‹Ð²ÐµÑÑ‚Ð¸ Ð½Ð° ÑÐºÑ€Ð°Ð½ Ð²ÑÐµ Ð½Ð¾Ð¼ÐµÑ€Ð° Ð¿Ñ€Ð¾Ð´ÑƒÐºÑ‚Ð¾Ð², ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ðµ Ð±Ñ‹Ð»Ð¸ ÐºÑƒÐ¿Ð»ÐµÐ½Ñ‹ Ð¸Ð»Ð¸ Ñ‚Ñ€Ð¸ Ð¸Ð»Ð¸ Ð¿ÑÑ‚ÑŒ Ñ€Ð°Ð·
+SELECT s.ProductID
+FROM Sales.SalesOrderDetail as s
+GROUP BY s.ProductID
+HAVING COUNT(s.ProductID) = 3 or COUNT(s.ProductID) = 5
+
+--#10 ÐÐ°Ð¹Ñ‚Ð¸ Ð¸ Ð²Ñ‹Ð²ÐµÑÑ‚Ð¸ Ð½Ð° ÑÐºÑ€Ð°Ð½ Ð²ÑÐµ Ð½Ð¾Ð¼ÐµÑ€Ð° Ð¿Ð¾Ð´ÐºÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸Ð¹, Ð² ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ð¼ Ð¾Ñ‚Ð½Ð¾ÑÐ¸Ñ‚ÑÑ Ð±Ð¾Ð»ÐµÐµ Ð´ÐµÑÑÑ‚Ð¸ Ñ‚Ð¾Ð²Ð°Ñ€Ð¾Ð².
+SELECT p.ProductSubcategoryID
+FROM Production.Product as p
+GROUP BY p.ProductSubcategoryID
+HAVING COUNT(*) > 10
+
+--#11 ÐÐ°Ð¹Ñ‚Ð¸ Ð¸ Ð²Ñ‹Ð²ÐµÑÑ‚Ð¸ Ð½Ð° ÑÐºÑ€Ð°Ð½ Ð½Ð¾Ð¼ÐµÑ€Ð° Ñ‚Ð¾Ð²Ð°Ñ€Ð¾Ð², ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ðµ Ð²ÑÐµÐ³Ð´Ð° Ð¿Ð¾ÐºÑƒÐ¿Ð°Ð»Ð¸ÑÑŒ Ð² Ð¾Ð´Ð½Ð¾Ð¼ ÑÐºÐ·ÐµÐ¼Ð¿Ð»ÑÑ€Ðµ Ð·Ð° Ð¾Ð´Ð½Ñƒ Ð¿Ð¾ÐºÑƒÐ¿ÐºÑƒ.
+SELECT s.ProductID
+FROM Sales.SalesOrderDetail as s
+GROUP BY s.ProductID
+HAVING MAX(s.OrderQty) = 1
+
+--#12 ÐÐ°Ð¹Ñ‚Ð¸ Ð¸ Ð²Ñ‹Ð²ÐµÑÑ‚Ð¸ Ð½Ð° ÑÐºÑ€Ð°Ð½ Ð½Ð¾Ð¼ÐµÑ€ Ñ‡ÐµÐºÐ°, SalesORDERID, Ð½Ð° ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ð¹ Ð¿Ñ€Ð¸Ñ…Ð¾Ð´Ð¸Ñ‚ÑÑ Ñ Ð½Ð°Ð¸Ð±Ð¾Ð»ÑŒÑˆÐ¸Ð¼ Ñ€Ð°Ð·Ð½Ð¾Ð¾Ð±Ñ€Ð°Ð·Ð¸ÐµÐ¼ Ñ‚Ð¾Ð²Ð°Ñ€Ð¾Ð² ÐºÑƒÐ¿Ð»ÐµÐ½Ð½Ñ‹Ñ… Ð½Ð° ÑÑ‚Ð¾Ñ‚ Ñ‡ÐµÐº.
+SELECT TOP(1) s.SalesOrderID
+FROM Sales.SalesOrderDetail as s
+GROUP BY s.SalesOrderID
+ORDER BY SUM(s.OrderQty) DESC
+
+--#13 ÐÐ°Ð¹Ñ‚Ð¸ Ð¸ Ð²Ñ‹Ð²ÐµÑÑ‚Ð¸ Ð½Ð° ÑÐºÑ€Ð°Ð½ Ð½Ð¾Ð¼ÐµÑ€ Ñ‡ÐµÐºÐ°, SalesORDERID Ñ Ð½Ð°Ð¸Ð±Ð¾Ð»ÑŒÑˆÐµÐ¹ ÑÑƒÐ¼Ð¼Ð¾Ð¹ Ð¿Ð¾ÐºÑƒÐ¿ÐºÐ¸, Ð¸ÑÑ…Ð¾Ð´Ñ Ð¸Ð· Ñ‚Ð¾Ð³Ð¾, Ñ‡Ñ‚Ð¾ Ñ†ÐµÐ½Ð° Ñ‚Ð¾Ð²Ð°Ñ€Ð° â€“ ÑÑ‚Ð¾ UnitPrice, Ð° ÐºÐ¾Ð»Ð¸Ñ‡ÐµÑÑ‚Ð²Ð¾ ÐºÐ¾Ð½ÐºÑ€ÐµÑ‚Ð½Ð¾Ð³Ð¾ Ñ‚Ð¾Ð²Ð°Ñ€Ð° Ð² Ñ‡ÐµÐºÐµ â€“ ÑÑ‚Ð¾ ORDERQty.
+SELECT TOP(1) s.SalesOrderID
+FROM Sales.SalesOrderDetail as s
+GROUP BY s.SalesOrderID
+ORDER BY SUM(s.OrderQty * s.UnitPrice) DESC
+
+--#14 ÐžÐ¿Ñ€ÐµÐ´ÐµÐ»Ð¸Ñ‚ÑŒ ÐºÐ¾Ð»Ð¸Ñ‡ÐµÑÑ‚Ð²Ð¾ Ñ‚Ð¾Ð²Ð°Ñ€Ð¾Ð² Ð² ÐºÐ°Ð¶Ð´Ð¾Ð¹ Ð¿Ð¾Ð´ÐºÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸Ð¸, Ð¸ÑÐºÐ»ÑŽÑ‡Ð°Ñ Ñ‚Ð¾Ð²Ð°Ñ€Ñ‹, Ð´Ð»Ñ ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ñ… Ð¿Ð¾Ð´ÐºÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸Ñ Ð½Ðµ Ð¾Ð¿Ñ€ÐµÐ´ÐµÐ»ÐµÐ½Ð°, Ð¸ Ñ‚Ð¾Ð²Ð°Ñ€Ñ‹, Ñƒ ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ñ… Ð½Ðµ Ð¾Ð¿Ñ€ÐµÐ´ÐµÐ»ÐµÐ½ Ñ†Ð²ÐµÑ‚.
+SELECT p.ProductSubcategoryID, COUNT(*) as 'Amount'
+FROM Production.Product as p
+WHERE p.Color is not null and p.ProductSubcategoryID is not null
+GROUP BY p.ProductSubcategoryID
+
+--#15 ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ ÑÐ¿Ð¸ÑÐ¾Ðº Ñ†Ð²ÐµÑ‚Ð¾Ð² Ñ‚Ð¾Ð²Ð°Ñ€Ð¾Ð² Ð² Ð¿Ð¾Ñ€ÑÐ´ÐºÐµ ÑƒÐ±Ñ‹Ð²Ð°Ð½Ð¸Ñ ÐºÐ¾Ð»Ð¸Ñ‡ÐµÑÑ‚Ð²Ð° Ñ‚Ð¾Ð²Ð°Ñ€Ð¾Ð² Ð´Ð°Ð½Ð½Ð¾Ð³Ð¾ Ñ†Ð²ÐµÑ‚Ð°
+SELECT p.Color
+FROM Production.Product as p
+GROUP BY p.Color
+ORDER BY COUNT(*) DESC
+
+--#16 Ð’Ñ‹Ð²ÐµÑÑ‚Ð¸ Ð½Ð° ÑÐºÑ€Ð°Ð½ ProductID Ñ‚ÐµÑ… Ñ‚Ð¾Ð²Ð°Ñ€Ð¾Ð², Ñ‡Ñ‚Ð¾ Ð²ÑÐµÐ³Ð´Ð° Ð¿Ð¾ÐºÑƒÐ¿Ð°Ð»Ð¸ÑÑŒ Ð² ÐºÐ¾Ð»Ð¸Ñ‡ÐµÑÑ‚Ð²Ðµ Ð±Ð¾Ð»ÐµÐµ 1 ÐµÐ´Ð¸Ð½Ð¸Ñ†Ñ‹ Ð½Ð° Ð¾Ð´Ð¸Ð½ Ñ‡ÐµÐº, Ð¿Ñ€Ð¸ ÑÑ‚Ð¾Ð¼ Ñ‚Ð°ÐºÐ¸Ñ… Ð¿Ð¾ÐºÑƒÐ¿Ð¾Ðº Ð±Ñ‹Ð»Ð¾ Ð±Ð¾Ð»ÐµÐµ Ð´Ð²ÑƒÑ….
+SELECT s.ProductID
+FROM Sales.SalesOrderDetail as s
+GROUP BY s.ProductID
+HAVING MIN(s.OrderQty) > 1 and COUNT(*) > 2
+
