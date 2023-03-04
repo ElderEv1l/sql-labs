@@ -63,13 +63,13 @@ GROUP BY s.ProductID
 HAVING MAX(s.OrderQty) = 1
 
 --#12 Найти и вывести на экран номер чека, SalesORDERID, на который приходится с наибольшим разнообразием товаров купленных на этот чек.
-SELECT TOP(1) s.SalesOrderID
+SELECT TOP 1 s.SalesOrderID
 FROM Sales.SalesOrderDetail as s
 GROUP BY s.SalesOrderID
 ORDER BY SUM(s.OrderQty) DESC
 
 --#13 Найти и вывести на экран номер чека, SalesORDERID с наибольшей суммой покупки, исходя из того, что цена товара – это UnitPrice, а количество конкретного товара в чеке – это ORDERQty.
-SELECT TOP(1) s.SalesOrderID
+SELECT TOP 1 s.SalesOrderID
 FROM Sales.SalesOrderDetail as s
 GROUP BY s.SalesOrderID
 ORDER BY SUM(s.OrderQty * s.UnitPrice) DESC
